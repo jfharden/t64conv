@@ -16,8 +16,8 @@ module T64conv
         Dir.foreach(@directory) do |file|
           fullpath = File.join(@directory, file)
 
-          if File.directory?(file)
-            DirectoryTraverser(fullpath, tape_converter).discover
+          if File.directory?(fullpath)
+            DirectoryTraverser(fullpath, tape_converter, @dryrun).discover
             next
           end
 
@@ -28,11 +28,11 @@ module T64conv
       def _handle_file(path)
         case File.extname(path).downcase
         when 't64'
-          TapeFileHandler(path).handle
+          TapeFileHandler(path, @dryrun).handle
         when 'd64'
-          DiskFileHandler(path).handle
+          DiskFileHandler(path, @dryrun).handle
         when 'zip'
-          ZipFileHandler(path).handle
+          ZipFileHandler(path, @dryrun).handle
         end
       end
     end
