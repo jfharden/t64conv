@@ -1,5 +1,3 @@
-require "spec_helper"
-
 require_relative "../../../../lib/t64conv/file_handlers/zip_file"
 require_relative "../../../../lib/t64conv/file_handlers/directory_traverser"
 
