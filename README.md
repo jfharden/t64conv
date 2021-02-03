@@ -10,8 +10,11 @@ or another zip file (if they do it will be unzipped into a temporary directory t
 A new directory (specified by --outdir/-o, by default ./C64DISKS will be created, or reused if it already exists.
 
 Every T64 file found will have a new directory made which has the same name as the T64 file (if it is SHOWDOWN.T64 a
-directory SHOWDOWN created), placed into a subdirectory which is the same of the first letter of the T64 filename (so
-as to alphabetise them) and have any .nfo file found in the same location as the T64 placed into the same directory.
+directory SHOWDOWN created), placed into a subdirectory which is the same of the first letter (uppercased) of the T64
+filename (so as to alphabetise them) and have any .nfo file found in the same location as the T64 placed into the same
+directory.
+
+All of the files in the output directory will be created with uppercase names.
 
 If you provide the --include-tape/-t option it will also copy the T64 file into the destination directory.
 

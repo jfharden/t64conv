@@ -18,7 +18,7 @@ module T64conv
       end
 
       def handle
-        return unless _zip_interesting?
+        return unless zip_interesting?
 
         # Make a temp dir for extraction
         Dir.mktmpdir('t64conv-') do |tmpdir|
@@ -27,14 +27,11 @@ module T64conv
 
           _extract_and_traverse(File.join(tmpdir, zip_name_no_ext))
         end
-        # Make a tempdir
-        # extract into a subdir of the tempdir with the zip file name
-        # discover on the subdir
       end
 
-      def _zip_interesting?
+      def zip_interesting?
         Zip::File.foreach(@path) do |archive|
-          extension = File.extname(archive).downcase
+          extension = File.extname(archive.name).downcase
 
           return true if %w[t64 d64 zip].include?(extension)
         end
@@ -51,7 +48,7 @@ module T64conv
             end
           end
 
-          DirectoryTraverser(unzip_destination, @tape_converter, dryrun)
+          DirectoryTraverser(unzip_destination, @tape_converter, @dryrun)
         end
       end
     end
