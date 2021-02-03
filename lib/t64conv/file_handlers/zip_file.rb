@@ -33,23 +33,24 @@ module T64conv
         Zip::File.foreach(@path) do |archive|
           extension = File.extname(archive.name).downcase
 
-          return true if %w[t64 d64 zip].include?(extension)
+          return true if %w[.t64 .d64 .zip].include?(extension)
         end
 
         false
       end
 
       def _extract_and_traverse(unzip_destination)
-        Dir.mkdir(unzip_destination) do
-          # Extract the zip into the directory with the same name as the zip
-          Zip::Zipfile.open(@path) do |zipfile|
-            zipfile.each do |zip_entry|
-              zipfile.extract(zip_entry, unzip_destination)
-            end
-          end
+        Dir.mkdir(unzip_destination)
 
-          DirectoryTraverser(unzip_destination, @tape_converter, @dryrun)
+        # Extract the zip into the directory with the same name as the zip
+        Zip::File.open(@path) do |zipfile|
+          zipfile.each do |zip_entry|
+            extract_to = File.join(unzip_destination, zip_entry.name)
+            zipfile.extract(zip_entry, extract_to)
+          end
         end
+
+        DirectoryTraverser.new(unzip_destination, @tape_converter, @dryrun)
       end
     end
   end
