@@ -12,3 +12,5 @@
 
 # Ignore the Gemfile.lock since this is a Gem
 Gemfile.lock
+
+.byebug_history
