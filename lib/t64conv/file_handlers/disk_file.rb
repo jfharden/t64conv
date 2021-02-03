@@ -1,4 +1,4 @@
-require_relative './base_flat_file'
+require_relative "./base_flat_file"
 
 module T64conv
   module FileHandlers

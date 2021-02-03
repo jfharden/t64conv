@@ -3,3 +3,9 @@ Style/FrozenStringLiteralComment:
 
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Metrics/BlockLength:
+  IgnoredMethods: ['describe', 'context']

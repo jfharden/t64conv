@@ -1,6 +1,6 @@
-require_relative './directory_traverser'
+require_relative "./directory_traverser"
 
-require 'zip'
+require "zip"
 
 module T64conv
   module FileHandlers
@@ -21,9 +21,9 @@ module T64conv
         return unless zip_interesting?
 
         # Make a temp dir for extraction
-        Dir.mktmpdir('t64conv-') do |tmpdir|
+        Dir.mktmpdir("t64conv-") do |tmpdir|
           # Make a directory in the tempdir which has the name of the zipfile without it's extension
-          zip_name_no_ext = File.basename(@path, '.*')
+          zip_name_no_ext = File.basename(@path, ".*")
 
           _extract_and_traverse(File.join(tmpdir, zip_name_no_ext))
         end

@@ -8,7 +8,7 @@ module T64conv
       end
 
       def handle
-        raise NotImplementedError, 'Must be implemented in concrete subclass'
+        raise NotImplementedError, "Must be implemented in concrete subclass"
       end
     end
   end

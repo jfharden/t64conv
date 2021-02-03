@@ -1,6 +1,6 @@
-require_relative './disk_file'
-require_relative './tape_file'
-require_relative './zip_file'
+require_relative "./disk_file"
+require_relative "./tape_file"
+require_relative "./zip_file"
 
 module T64conv
   module FileHandlers
@@ -27,11 +27,11 @@ module T64conv
 
       def _handle_file(path)
         case File.extname(path).downcase
-        when 't64'
+        when "t64"
           TapeFileHandler(path, @dryrun).handle
-        when 'd64'
+        when "d64"
           DiskFileHandler(path, @dryrun).handle
-        when 'zip'
+        when "zip"
           ZipFileHandler(path, @dryrun).handle
         end
       end
