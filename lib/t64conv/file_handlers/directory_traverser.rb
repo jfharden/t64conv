@@ -7,6 +7,8 @@ module T64conv
     # Reads a directories contents and triggers the appropriate handlers for the type of file
     class DirectoryTraverser
       def initialize(directory, tape_converter, dryrun)
+        raise ArgumentError, "#{directory} is not a directory" unless File.directory?(directory)
+
         @directory = directory
         @tape_converter = tape_converter
         @dryrun = dryrun
@@ -14,9 +16,9 @@ module T64conv
 
       def discover
         Dir.foreach(@directory) do |file|
-          next if %w[. ..].include?(file)
+          next if %w[. ..].include?(File.basename(file))
 
-          fullpath = File.join(@directory, file)
+          fullpath = File.expand_path(File.join(@directory, file))
 
           if File.directory?(fullpath)
             DirectoryTraverser.new(fullpath, @tape_converter, @dryrun).discover
