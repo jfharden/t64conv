@@ -3,6 +3,7 @@ require_relative "../../../../lib/t64conv/file_handlers/directory_traverser"
 
 RSpec.describe T64conv::FileHandlers::ZipFileHandler do
   let(:tape_conv) { double }
+  let(:output_dir) { double }
   let(:dryrun) { false }
 
   tests = {
@@ -15,13 +16,13 @@ RSpec.describe T64conv::FileHandlers::ZipFileHandler do
 
   describe "#zip_interesting?" do
     it "returns false when uninteresting" do
-      handler = described_class.new(_fixture_file_path("uninteresting.zip"), tape_conv, dryrun)
+      handler = described_class.new(_fixture_file_path("uninteresting.zip"), tape_conv, output_dir, dryrun)
       expect(handler.zip_interesting?).to be false
     end
 
     tests.each do |file_contents, filename|
       it "returns true when the zip contains #{file_contents}" do
-        handler = described_class.new(_fixture_file_path(filename), tape_conv, dryrun)
+        handler = described_class.new(_fixture_file_path(filename), tape_conv, output_dir, dryrun)
         expect(handler.zip_interesting?).to be true
       end
     end
@@ -38,10 +39,10 @@ RSpec.describe T64conv::FileHandlers::ZipFileHandler do
           end
 
           zip_file_path = _fixture_file_path(filename)
-          handler = described_class.new(zip_file_path, tape_conv, dryrun)
+          handler = described_class.new(zip_file_path, tape_conv, output_dir, dryrun)
 
           extract_dir = File.join(tmpdir, File.basename(filename, ".*"))
-          expect(T64conv::FileHandlers::DirectoryTraverser).to receive(:new).with(extract_dir, tape_conv, dryrun) do
+          expect(T64conv::FileHandlers::DirectoryTraverser).to receive(:new).with(extract_dir, tape_conv, output_dir, dryrun) do
             expect_files_to_be_extracted_into(filename, extract_dir)
           end
 

@@ -4,19 +4,36 @@ require_relative "../../../../lib/t64conv/file_handlers/zip_file"
 require_relative "../../../../lib/t64conv/file_handlers/directory_traverser"
 
 RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
-  subject(:handler) { described_class.new(directory, tape_conv, dryrun) }
+  subject(:handler) { described_class.new(directory, tape_conv, output_dir, dryrun) }
   let(:tape_conv) { double }
+  let(:output_dir) { Dir.mktmpdir("t64conv-tests-directory-traverser-") }
   let(:dryrun) { double }
   let(:tape_file_handler) { double }
   let(:disk_file_handler) { double }
   let(:zip_file_handler) { double }
   let(:sub_dir_traverser) { double }
 
-  describe ".new" do
-    let(:directory) { File.join(_absolute_start_directory(""), "GAME10.T64") }
+  after(:example) { FileUtils.rm_rf(output_dir) }
 
-    it "Should raise ArgumentError if the directory passed in is not a directory" do
-      expect { handler }.to raise_error(ArgumentError)
+  describe ".new" do
+    context "with a passed in directory which is not a directory" do
+      let(:directory) { File.join(_absolute_start_directory(""), "GAME10.T64") }
+
+      it "Should raise ArgumentError" do
+        expect { handler }.to raise_error(ArgumentError, /GAME10\.T64 is not a directory$/)
+      end
+    end
+
+    context "with a passed in ouput_dir which is not a directory" do
+      subject(:handler) do
+        filepath = File.join(_absolute_start_directory("", "GAME11.t64"))
+        described_class.new(directory, tape_conv, filepath, dryrun)
+      end
+      let(:directory) { _absolute_start_directory }
+
+      it "Should raise ArgumentError" do
+        expect { handler }.to raise_error(ArgumentError, /output directory .*GAME11\.t64 is not a directory$/)
+      end
     end
   end
 
@@ -134,12 +151,14 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
   end
 
   def setup_directory_expect
-    expect(described_class).to receive(:new).with(directory, tape_conv, dryrun).and_call_original
+    expect(described_class).to receive(:new).with(directory, tape_conv, output_dir, dryrun).and_call_original
   end
 
   def expect_directory(dirname)
     expected_directory = _absolute_path_to_file(dirname)
-    expect(described_class).to receive(:new).with(expected_directory, tape_conv, dryrun).and_return(sub_dir_traverser)
+    expect(described_class).to receive(:new)
+      .with(expected_directory, tape_conv, output_dir, dryrun)
+      .and_return(sub_dir_traverser)
     expect(sub_dir_traverser).to receive(:discover).with(no_args)
   end
 
@@ -147,6 +166,7 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
     expect(T64conv::FileHandlers::TapeFileHandler).to receive(:new).with(
       _absolute_path_to_file(filename),
       tape_conv,
+      output_dir,
       dryrun
     ).and_return(tape_file_handler)
 
@@ -157,6 +177,7 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
     expect(T64conv::FileHandlers::DiskFileHandler).to receive(:new).with(
       _absolute_path_to_file(filename),
       tape_conv,
+      output_dir,
       dryrun
     ).and_return(disk_file_handler)
 
@@ -167,6 +188,7 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
     expect(T64conv::FileHandlers::ZipFileHandler).to receive(:new).with(
       _absolute_path_to_file(filename),
       tape_conv,
+      output_dir,
       dryrun
     ).and_return(zip_file_handler)
 
