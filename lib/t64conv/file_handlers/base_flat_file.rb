@@ -10,7 +10,7 @@ module T64conv
         raise ArgumentError, "Source filepath #{path} does not exist" unless File.exist?(path)
         raise ArgumentError, "Output directory #{output_dir} does not exist" unless File.exist?(output_dir)
 
-        @path = path
+        @path = File.expand_path(path)
         @tape_converter = tape_converter
         @output_dir = output_dir
         @dryrun = dryrun

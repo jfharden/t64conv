@@ -123,7 +123,7 @@ RSpec.shared_examples "base_flat_file" do
 
         it "prints to stdout the path being copied from and to" do
           destpath = _expected_destination_file("G", "GAME11", "GAME11.T64")
-          expect { handler.handle }.to output(/Copying #{sourcepath} -> #{destpath}/).to_stdout
+          expect { handler.handle }.to output(/Copying #{File.expand_path(sourcepath)} -> #{destpath}/).to_stdout
         end
       end
     end
