@@ -2,25 +2,7 @@ require "digest/md5"
 require "stringio"
 require "tmpdir"
 
-RSpec.shared_examples "base_flat_file" do |test_convert: true|
-  subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
-  let(:tape_conv) { double }
-  let(:output_dir) { Dir.mktmpdir("t64conv-tests-base-flat-file-handler-") }
-  let(:dryrun) { false }
-  let(:output_stream) { StringIO.new }
-
-  around(:example) do |example|
-    original_stdout = $stdout.clone
-
-    $stdout = output_stream
-
-    example.call
-
-    $stdout = original_stdout
-  end
-
-  after(:example) { FileUtils.rm_rf(output_dir) }
-
+RSpec.shared_examples "errors when passed invalid arguments" do
   describe ".new" do
     context "when the source path doesn't exist" do
       let(:sourcepath) { _fixture_filepath("foo", "bar") }
@@ -39,6 +21,28 @@ RSpec.shared_examples "base_flat_file" do |test_convert: true|
       end
     end
   end
+end
+
+RSpec.shared_examples "base_flat_file" do
+  subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
+  let(:tape_conv) { double }
+  let(:output_dir) { Dir.mktmpdir("t64conv-tests-base-flat-file-handler-") }
+  let(:dryrun) { false }
+  let(:output_stream) { StringIO.new }
+
+  around(:example) do |example|
+    original_stdout = $stdout.clone
+
+    $stdout = output_stream
+
+    example.call
+
+    $stdout = original_stdout
+  end
+
+  after(:example) { FileUtils.rm_rf(output_dir) }
+
+  it_behaves_like "errors when passed invalid arguments"
 
   describe "#handle" do
     let(:sourcepath) { _fixture_filepath("game11.t64") }
@@ -49,20 +53,6 @@ RSpec.shared_examples "base_flat_file" do |test_convert: true|
       expect(File).not_to exist(_expected_destination_file("g"))
       expect(File).not_to exist(_expected_destination_file("G", "game11"))
       expect(File).not_to exist(_expected_destination_file("G", "GAME11", "game11.t64"))
-    end
-
-    if test_convert
-      it "calls the convert method (which will be overridden in subclasses)" do
-        expect_any_instance_of(described_class).to receive(:convert).exactly(1).times.and_call_original
-        handler.handle
-      end
-    end
-
-    def expect_source_and_destination_are_identical(source, dest)
-      source_md5 = Digest::MD5.hexdigest(File.read(source))
-      dest_md5 = Digest::MD5.hexdigest(File.read(dest))
-
-      expect(source_md5).to eq dest_md5
     end
 
     it "copies the correct file" do
@@ -138,12 +128,12 @@ RSpec.shared_examples "base_flat_file" do |test_convert: true|
       end
     end
   end
+end
 
-  def _expected_destination_file(*pathparts)
-    File.expand_path(File.join(output_dir, *pathparts))
-  end
+def _expected_destination_file(*pathparts)
+  File.expand_path(File.join(output_dir, *pathparts))
+end
 
-  def _fixture_filepath(*path_parts)
-    File.join("spec", "fixtures", "example_structure", *path_parts)
-  end
+def _fixture_filepath(*path_parts)
+  File.join("spec", "fixtures", "example_structure", *path_parts)
 end

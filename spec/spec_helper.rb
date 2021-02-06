@@ -11,3 +11,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+def expect_source_and_destination_are_identical(source, dest)
+  source_md5 = Digest::MD5.hexdigest(File.read(source))
+  dest_md5 = Digest::MD5.hexdigest(File.read(dest))
+
+  expect(source_md5).to eq dest_md5
+end
