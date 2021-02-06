@@ -2,8 +2,6 @@ require "digest/md5"
 require "stringio"
 require "tmpdir"
 
-require_relative "../../../../../lib/t64conv/file_handlers/base_flat_file"
-
 RSpec.shared_examples "base_flat_file" do |test_convert: true|
   subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
   let(:tape_conv) { double }
