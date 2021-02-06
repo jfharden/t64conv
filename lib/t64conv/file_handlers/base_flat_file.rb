@@ -2,15 +2,101 @@ module T64conv
   module FileHandlers
     # Base handler for any file which is not an archive or directory
     class BaseFlatFileHandler
+      # Looking for a number surrounded by parentehses as the final thing in a string (even multi-line) other than
+      # whitespace. This extracts the number only and returns it as a capture
+      VERSION_NUMBER_REGEXP = Regexp.new(/\(([0-9]+)\)\s*\Z/)
+
       def initialize(path, tape_converter, output_dir, dryrun)
+        raise ArgumentError, "Source filepath #{path} does not exist" unless File.exist?(path)
+        raise ArgumentError, "Output directory #{output_dir} does not exist" unless File.exist?(output_dir)
+
         @path = path
         @tape_converter = tape_converter
         @output_dir = output_dir
         @dryrun = dryrun
+
+        @source_dir = File.dirname(path)
+        @source_file = File.basename(path)
       end
 
       def handle
-        raise NotImplementedError, "Must be implemented in concrete subclass"
+        _create_output_dir
+        converted_source_file = convert
+        _copy_file(converted_source_file)
+        _copy_version_nfo
+      end
+
+      def _create_output_dir
+        FileUtils.mkdir_p(_destination_directory)
+      end
+
+      def convert
+        _info_msg("Not converting #{@path}")
+        @path
+      end
+
+      def _copy_file(source_path)
+        _info_msg("Copying #{source_path} -> #{_destination_fullpath}")
+        FileUtils.cp(source_path, _destination_fullpath) unless @dryrun
+      end
+
+      def _copy_version_nfo
+        unless _version_nfo_source_filename
+          _info_msg("No VERSION.nfo to copy")
+          return
+        end
+
+        _info_msg("Copying #{_version_nfo_source_fullpath} -> #{_version_nfo_destination_fullpath}")
+
+        FileUtils.cp(
+          _version_nfo_source_fullpath,
+          _version_nfo_destination_fullpath
+        )
+      end
+
+      def _destination_fullpath
+        @destination_fullpath ||= File.join(_destination_directory, _destination_filename)
+      end
+
+      def _destination_directory
+        @destination_directory ||= File.join(*[
+          @output_dir,
+          _alphabetic_directory,
+          File.basename(_destination_filename, ".*"),
+          _version_number
+        ].compact)
+      end
+
+      def _destination_filename
+        @destination_filename ||= @source_file.upcase
+      end
+
+      def _alphabetic_directory
+        @source_file[0].upcase
+      end
+
+      # Returns either the version number (as a string) or nil
+      def _version_number
+        VERSION_NUMBER_REGEXP.match(File.basename(@source_dir))&.captures&.first
+      end
+
+      def _version_nfo_destination_fullpath
+        File.join(_destination_directory, _version_nfo_source_filename.upcase)
+      end
+
+      def _version_nfo_source_fullpath
+        @version_nfo_source_fullpath ||= File.join(@source_dir, _version_nfo_source_filename)
+      end
+
+      def _version_nfo_source_filename
+        @version_nfo_source_filename ||= Dir.foreach(@source_dir) do |file|
+          return file if file.downcase == "version.nfo"
+        end
+      end
+
+      def _info_msg(message)
+        print("DRYRUN: ") if @dryrun
+        puts(message)
       end
     end
   end

@@ -1,3 +1,5 @@
+require "tmpdir"
+
 require_relative "../../../../lib/t64conv/file_handlers/disk_file"
 require_relative "../../../../lib/t64conv/file_handlers/tape_file"
 require_relative "../../../../lib/t64conv/file_handlers/zip_file"
@@ -123,6 +125,7 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
         expect_directory("subdir")
         expect_directory("subdir2")
         expect_directory("subdir3")
+        expect_directory("subdir4")
         expect_directory("z-game1")
 
         subject.discover
