@@ -8,4 +8,4 @@ Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Metrics/BlockLength:
-  IgnoredMethods: ['describe', 'context']
+  IgnoredMethods: ['describe', 'context', 'shared_examples']
