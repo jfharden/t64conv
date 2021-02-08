@@ -1,1 +1,5 @@
 #!/usr/bin/env ruby
+
+require_relative "../lib/t64conv"
+
+T64conv::Cli.new.convert
