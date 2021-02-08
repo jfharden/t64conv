@@ -14,3 +14,6 @@
 Gemfile.lock
 
 .byebug_history
+
+# Ignore the built gemfile
+t64conv-*.*.*.gem
