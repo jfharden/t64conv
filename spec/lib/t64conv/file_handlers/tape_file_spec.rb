@@ -69,7 +69,7 @@ RSpec.describe T64conv::FileHandlers::TapeFileHandler do
         expect(captured_stderr.string).to eq(
           "Conversion of #{File.expand_path(sourcepath)} -> #{expected_destination} failed.\n" \
           "Command was #{expected_command}. Output from c1541 follows:\n" \
-          "----\n#{fail_output}\n----\n"
+          "----\n#{fail_output}----\n\n"
         )
       end
     end

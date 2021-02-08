@@ -4,6 +4,7 @@ require_relative "../../../../lib/t64conv/file_handlers/directory_traverser"
 RSpec.describe T64conv::FileHandlers::ZipFileHandler do
   let(:output_dir) { double }
   let(:dryrun) { false }
+  let(:output_stream) { StringIO.new }
 
   tests = {
     "a T64 file" => "t64_in_subdir.zip",
@@ -12,6 +13,16 @@ RSpec.describe T64conv::FileHandlers::ZipFileHandler do
     "interesting files and the zip file name has a version number" => "with_version (123).zip",
     "a zip file" => "ZIP_FILE.ZIP",
   }
+
+  around(:example) do |example|
+    original_stdout = $stdout.clone
+
+    $stdout = output_stream
+
+    example.call
+
+    $stdout = original_stdout
+  end
 
   describe "#zip_interesting?" do
     it "returns false when uninteresting" do
@@ -30,6 +41,8 @@ RSpec.describe T64conv::FileHandlers::ZipFileHandler do
   let(:original_mktmpdir) { Dir.method(:mktmpdir) }
 
   describe "#handle" do
+    let(:traverser) { double }
+
     tests.each do |file_contents, filename|
       it "extracts correctly #{file_contents}" do
         original_mktmpdir.call("t64conv-") do |tmpdir|
@@ -43,7 +56,9 @@ RSpec.describe T64conv::FileHandlers::ZipFileHandler do
           extract_dir = File.join(tmpdir, File.basename(filename, ".*"))
           expect(T64conv::FileHandlers::DirectoryTraverser).to receive(:new).with(extract_dir, output_dir, dryrun) do
             expect_files_to_be_extracted_into(filename, extract_dir)
-          end
+          end.and_return(traverser)
+
+          expect(traverser).to receive(:discover).with(no_args)
 
           handler.handle
         end

@@ -32,15 +32,20 @@ module T64conv
       def zip_interesting?
         Zip::File.foreach(@path) do |archive|
           extension = File.extname(archive.name).downcase
-
-          return true if %w[.t64 .d64 .zip].include?(extension)
+          if %w[.t64 .d64 .zip].include?(extension)
+            _info_msg("ZIP File #{@path} contains a T64, D64, or ZIP file, extracting")
+            return true
+          end
         end
 
+        _info_msg("ZIP File #{@path} does not contain any T64, D64, or ZIP files.")
         false
       end
 
       def _extract_and_traverse(unzip_destination)
         Dir.mkdir(unzip_destination)
+
+        _info_msg("ZIP extracting to #{unzip_destination} for traversal")
 
         # Extract the zip into the directory with the same name as the zip
         Zip::File.open(@path) do |zipfile|
@@ -50,7 +55,12 @@ module T64conv
           end
         end
 
-        DirectoryTraverser.new(unzip_destination, @output_dir, @dryrun)
+        DirectoryTraverser.new(unzip_destination, @output_dir, @dryrun).discover
+      end
+
+      def _info_msg(message)
+        print("DRYRUN: ") if @dryrun
+        puts(message)
       end
     end
   end

@@ -35,7 +35,7 @@ module T64conv
 
       def _copy_version_nfo
         unless _version_nfo_source_filename
-          _info_msg("No VERSION.nfo to copy")
+          _info_msg("No VERSION.nfo to copy in #{@source_dir}")
           return
         end
 

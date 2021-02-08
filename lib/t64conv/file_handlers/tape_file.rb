@@ -17,7 +17,7 @@ module T64conv
 
         warn("Conversion of #{@path} -> #{_destination_fullpath} failed.")
         warn("Command was #{_conversion_command}. Output from c1541 follows:")
-        warn("----\n#{output}\n----\n")
+        warn("----\n#{output}----\n\n")
       end
 
       def _destination_filename

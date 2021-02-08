@@ -2,12 +2,13 @@
 
 This gem provides a cli wrapper around c1541 provided with the vice emulator.
 
-Execution will look recursively inside the current directory for T64 files to convert to D64 files.
+Execution will look recursively inside a directory (specified by `--source-dir/-s`, by default `./`) for T64 files to
+convert to D64 files.
 
 It will look for T64 files as plain files and also look inside any zip files to see if they contain a T64, a D64, 
 or another zip file (if they do it will be unzipped into a temporary directory to operate on.)
 
-A new directory (specified by --outdir/-o, by default ./C64DISKS will be created, or reused if it already exists.
+A new directory (specified by `--output-dir/-o`, by default `./C64DISKS` will be created, or reused if it already exists.
 
 Every T64 file found will have a new directory made which has the same name as the T64 file (if it is SHOWDOWN.T64 a
 directory SHOWDOWN created), placed into a subdirectory which is the same of the first letter (uppercased) of the T64
@@ -15,8 +16,6 @@ filename (so as to alphabetise them) and have any .nfo file found in the same lo
 directory.
 
 All of the files in the output directory will be created with uppercase names.
-
-If you provide the --include-tape/-t option it will also copy the T64 file into the destination directory.
 
 So in the following structure:
 
@@ -35,7 +34,6 @@ Would produce
 │   └── S
 │       └── SHOWDOWN
 │           ├── SHOWDOWN.D64
-│           ├── SHOWDOWN.T64
 │           └── VERSION.nfo
 └── tape_images
     └── showdown
@@ -60,7 +58,7 @@ gem install t64conv
 You must have the c1541 utility installed to use this gem.
 
 ```bash
-t64conv --include-tape
+t64conv --source-dir c64/ --output-dir sd2iec/
 ```
 
 ## Development
