@@ -17,3 +17,6 @@ Gemfile.lock
 
 # Ignore the built gemfile
 t64conv-*.*.*.gem
+
+# Ignore the directory that disks get output to by default
+/C64DISKS
