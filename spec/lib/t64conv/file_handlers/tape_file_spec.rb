@@ -3,8 +3,7 @@ require_relative "../../../../lib/t64conv/file_handlers/tape_file"
 require_relative "./shared_examples/base_flat_file"
 
 RSpec.describe T64conv::FileHandlers::TapeFileHandler do
-  subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
-  let(:tape_conv) { double }
+  subject(:handler) { described_class.new(sourcepath, output_dir, dryrun) }
   let(:output_dir) { Dir.mktmpdir("t64conv-tests-base-flat-file-handler-") }
   let(:dryrun) { false }
   let(:output_stream) { StringIO.new }

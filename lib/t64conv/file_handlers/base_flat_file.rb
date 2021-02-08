@@ -6,12 +6,11 @@ module T64conv
       # whitespace. This extracts the number only and returns it as a capture
       VERSION_NUMBER_REGEXP = Regexp.new(/\(([0-9]+)\)\s*\Z/)
 
-      def initialize(path, tape_converter, output_dir, dryrun)
+      def initialize(path, output_dir, dryrun)
         raise ArgumentError, "Source filepath #{path} does not exist" unless File.exist?(path)
         raise ArgumentError, "Output directory #{output_dir} does not exist" unless File.exist?(output_dir)
 
         @path = File.expand_path(path)
-        @tape_converter = tape_converter
         @output_dir = output_dir
         @dryrun = dryrun
 

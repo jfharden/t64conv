@@ -24,8 +24,7 @@ RSpec.shared_examples "errors when passed invalid arguments" do
 end
 
 RSpec.shared_examples "base_flat_file" do
-  subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
-  let(:tape_conv) { double }
+  subject(:handler) { described_class.new(sourcepath, output_dir, dryrun) }
   let(:output_dir) { Dir.mktmpdir("t64conv-tests-base-flat-file-handler-") }
   let(:dryrun) { false }
   let(:output_stream) { StringIO.new }

@@ -6,12 +6,11 @@ module T64conv
   module FileHandlers
     # Reads a directories contents and triggers the appropriate handlers for the type of file
     class DirectoryTraverser
-      def initialize(directory, tape_converter, output_dir, dryrun)
+      def initialize(directory, output_dir, dryrun)
         raise ArgumentError, "#{directory} is not a directory" unless File.directory?(directory)
         raise ArgumentError, "output directory #{output_dir} is not a directory" unless File.directory?(output_dir)
 
         @directory = directory
-        @tape_converter = tape_converter
         @output_dir = output_dir
         @dryrun = dryrun
       end
@@ -23,7 +22,7 @@ module T64conv
           fullpath = File.expand_path(File.join(@directory, file))
 
           if File.directory?(fullpath)
-            DirectoryTraverser.new(fullpath, @tape_converter, @output_dir, @dryrun).discover
+            DirectoryTraverser.new(fullpath, @output_dir, @dryrun).discover
             next
           end
 
@@ -42,7 +41,7 @@ module T64conv
             ZipFileHandler
           end
 
-        handler_class&.new(path, @tape_converter, @output_dir, @dryrun)&.handle
+        handler_class&.new(path, @output_dir, @dryrun)&.handle
       end
     end
   end

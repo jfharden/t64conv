@@ -11,9 +11,8 @@ module T64conv
     #   3. The contents of the zip file will be extracted to that subdirectory.
     #   4. Traversal of that subdirectory will be initiated
     class ZipFileHandler
-      def initialize(path, tape_converter, output_dir, dryrun)
+      def initialize(path, output_dir, dryrun)
         @path = path
-        @tape_converter = tape_converter
         @output_dir = output_dir
         @dryrun = dryrun
       end
@@ -51,7 +50,7 @@ module T64conv
           end
         end
 
-        DirectoryTraverser.new(unzip_destination, @tape_converter, @output_dir, @dryrun)
+        DirectoryTraverser.new(unzip_destination, @output_dir, @dryrun)
       end
     end
   end
