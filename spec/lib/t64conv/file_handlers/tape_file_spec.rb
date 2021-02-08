@@ -1,29 +1,8 @@
-require "digest/md5"
-require "stringio"
-require "tmpdir"
+require_relative "../../../../lib/t64conv/file_handlers/tape_file"
 
-RSpec.shared_examples "errors when passed invalid arguments" do
-  describe ".new" do
-    context "when the source path doesn't exist" do
-      let(:sourcepath) { _fixture_filepath("foo", "bar") }
+require_relative "./shared_examples/base_flat_file"
 
-      it "raises ArgumentError" do
-        expect { handler }.to raise_error(ArgumentError, /Source filepath #{sourcepath} does not exist$/)
-      end
-    end
-
-    context "when the output_dir doesn't exist" do
-      let(:sourcepath) { _fixture_filepath("GAME10.T64") }
-      let(:output_dir) { _fixture_filepath("foo", "bar") }
-
-      it "raises ArgumentError" do
-        expect { handler }.to raise_error(ArgumentError, /Output directory #{output_dir} does not exist$/)
-      end
-    end
-  end
-end
-
-RSpec.shared_examples "base_flat_file" do
+RSpec.describe T64conv::FileHandlers::TapeFileHandler do
   subject(:handler) { described_class.new(sourcepath, tape_conv, output_dir, dryrun) }
   let(:tape_conv) { double }
   let(:output_dir) { Dir.mktmpdir("t64conv-tests-base-flat-file-handler-") }
@@ -47,20 +26,53 @@ RSpec.shared_examples "base_flat_file" do
   describe "#handle" do
     let(:sourcepath) { _fixture_filepath("game11.t64") }
 
-    it "makes the flename uppercase" do
-      handler.handle
-      expect(File).to exist(_expected_destination_file("G", "GAME11", "GAME11.T64"))
-      expect(File).not_to exist(_expected_destination_file("g"))
-      expect(File).not_to exist(_expected_destination_file("G", "game11"))
-      expect(File).not_to exist(_expected_destination_file("G", "GAME11", "game11.t64"))
+    let(:open3_capture_mock) { double }
+
+    context "when the conversion succeeds" do
+      let(:status_mock) { double success?: true }
+
+      it "runs the conversion with c1541 and makes the filename uppercase" do
+        expected_destination = _expected_destination_file("G", "GAME11", "GAME11.D64")
+
+        expect(Open3).to receive(:capture2e).with(
+          "c1541 -format 'GAME11,00' d64 '#{expected_destination}' 8 -tape '#{File.expand_path(sourcepath)}'"
+        ).and_return(["", status_mock])
+
+        handler.handle
+      end
     end
 
-    it "copies the correct file" do
-      handler.handle
-      expect_source_and_destination_are_identical(
-        sourcepath,
-        _expected_destination_file("G", "GAME11", "GAME11.T64")
-      )
+    context "when the conversion fails" do
+      let(:status_mock) { double success?: false }
+      let(:captured_stderr) { StringIO.new }
+
+      around(:example) do |example|
+        original_stderr = $stderr.clone
+
+        $stderr = captured_stderr
+
+        example.call
+
+        $stdout = original_stderr
+      end
+
+      it "outputs the error as a warning" do
+        expected_destination = _expected_destination_file("G", "GAME11", "GAME11.D64")
+        expected_source = File.expand_path(sourcepath)
+        fail_output = "TEST FAIL OUT"
+
+        expected_command = "c1541 -format 'GAME11,00' d64 '#{expected_destination}' 8 -tape '#{expected_source}'"
+
+        expect(Open3).to receive(:capture2e).with(expected_command).and_return([fail_output, status_mock])
+
+        handler.handle
+
+        expect(captured_stderr.string).to eq(
+          "Conversion of #{File.expand_path(sourcepath)} -> #{expected_destination} failed.\n" \
+          "Command was #{expected_command}. Output from c1541 follows:\n" \
+          "----\n#{fail_output}\n----\n"
+        )
+      end
     end
 
     context "when there is a version.nfo in the source directory" do
@@ -104,8 +116,8 @@ RSpec.shared_examples "base_flat_file" do
 
       it "copies the file into the output_directory/alphabetical/game/version subdir" do
         handler.handle
-        expect(File).to exist(_expected_destination_file("G", "GAME2", "1", "GAME2.T64"))
-        expect(File).not_to exist(_expected_destination_file("G", "GAME2", "GAME2.T64"))
+        expect(File).to exist(_expected_destination_file("G", "GAME2", "1", "GAME2.D64"))
+        expect(File).not_to exist(_expected_destination_file("G", "GAME2", "GAME2.D64"))
       end
     end
 
@@ -115,26 +127,19 @@ RSpec.shared_examples "base_flat_file" do
 
       it "doesn't copy the file to the output directory" do
         handler.handle
-        expect(File).not_to exist(_expected_destination_file("G", "GAME11", "GAME11.T64"))
+        expect(File).not_to exist(_expected_destination_file("G", "GAME11", "GAME11.D64"))
       end
 
       context "capturing stdout" do
         let(:output_stream) { $stdout }
 
         it "prints to stdout the path being copied from and to" do
-          destpath = _expected_destination_file("G", "GAME11", "GAME11.T64")
+          destpath = _expected_destination_file("G", "GAME11", "GAME11.D64")
           full_sourcepath = File.expand_path(sourcepath)
-          expect { handler.handle }.to output(/DRYRUN: Copying #{full_sourcepath} -> #{destpath}/).to_stdout
+
+          expect { handler.handle }.to output(/DRYRUN: Converting #{full_sourcepath} -> #{destpath}/).to_stdout
         end
       end
     end
   end
-end
-
-def _expected_destination_file(*pathparts)
-  File.expand_path(File.join(output_dir, *pathparts))
-end
-
-def _fixture_filepath(*path_parts)
-  File.join("spec", "fixtures", "example_structure", *path_parts)
 end

@@ -21,8 +21,7 @@ module T64conv
 
       def handle
         _create_output_dir
-        converted_source_file = convert
-        _copy_file(converted_source_file)
+        _copy_file
         _copy_version_nfo
       end
 
@@ -30,14 +29,9 @@ module T64conv
         FileUtils.mkdir_p(_destination_directory)
       end
 
-      def convert
-        _info_msg("Not converting #{@path}")
-        @path
-      end
-
-      def _copy_file(source_path)
-        _info_msg("Copying #{source_path} -> #{_destination_fullpath}")
-        FileUtils.cp(source_path, _destination_fullpath) unless @dryrun
+      def _copy_file
+        _info_msg("Copying #{@path} -> #{_destination_fullpath}")
+        FileUtils.cp(@path, _destination_fullpath) unless @dryrun
       end
 
       def _copy_version_nfo
