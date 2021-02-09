@@ -51,8 +51,9 @@ module T64conv
         version "t64conv #{T64conv::VERSION} (c) 2021 Jonathan F Harden"
         banner BANNER
         opt :dryrun, "Run in dryrun mode, don't perform operations, only list what would be performed.", default: false
-        opt :output_dir, "Output to this directory instead of the default.", type: String, default: "./C64DISKS"
-        opt :source_dir, "Where to start looking for files.", type: String, default: "./"
+        opt :output_dir, "Output to this directory instead of the default.",
+            type: String, default: File.join(".", "C64DISKS")
+        opt :source_dir, "Where to start looking for files.", type: String, default: "."
       end
     end
 

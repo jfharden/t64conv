@@ -32,7 +32,7 @@ RSpec.describe T64conv::Cli do
     it "uses ./ as the source dir" do
       expect(T64conv::FileHandlers::DirectoryTraverser)
         .to receive(:new)
-        .with("./", anything, anything)
+        .with(".", anything, anything)
         .and_return(traverser)
 
       expect { cli.convert(args) }.not_to raise_error
@@ -41,7 +41,7 @@ RSpec.describe T64conv::Cli do
     it "user ./C64DISKS as the output dir" do
       expect(T64conv::FileHandlers::DirectoryTraverser)
         .to receive(:new)
-        .with(anything, "./C64DISKS", anything)
+        .with(anything, File.join(".", "C64DISKS"), anything)
         .and_return(traverser)
 
       expect { cli.convert(args) }.not_to raise_error
@@ -120,7 +120,7 @@ RSpec.describe T64conv::Cli do
       it "sets dryrun to be true" do
         expect(T64conv::FileHandlers::DirectoryTraverser)
           .to receive(:new)
-          .with("./", "./C64DISKS", true)
+          .with(".", File.join(".", "C64DISKS"), true)
           .and_return(traverser)
 
         expect { cli.convert(args) }.not_to raise_error
@@ -132,7 +132,7 @@ RSpec.describe T64conv::Cli do
 
           expect(T64conv::FileHandlers::DirectoryTraverser)
             .to receive(:new)
-            .with("./", outdir, true)
+            .with(".", outdir, true)
             .and_return(traverser)
 
           expect { cli.convert(args + ["-o", outdir]) }.not_to raise_error
@@ -167,7 +167,7 @@ RSpec.describe T64conv::Cli do
       it "sets the source dir to be where the user specified" do
         expect(T64conv::FileHandlers::DirectoryTraverser)
           .to receive(:new)
-          .with(@tmpdir, "./C64DISKS", false)
+          .with(@tmpdir, File.join(".", "C64DISKS"), false)
           .and_return(traverser)
 
         expect { cli.convert([flag, @tmpdir]) }.not_to raise_error
@@ -199,7 +199,7 @@ RSpec.describe T64conv::Cli do
       it "sets the output dir to be where the user specified" do
         expect(T64conv::FileHandlers::DirectoryTraverser)
           .to receive(:new)
-          .with("./", @tmpdir, false)
+          .with(".", @tmpdir, false)
           .and_return(traverser)
 
         expect { cli.convert([flag, @tmpdir]) }.not_to raise_error
