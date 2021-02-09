@@ -1,0 +1,4 @@
+d t64_file/
+d t64_file/subdir/
+f t64_file/subdir/GAME.T64
+f t64_file/another_file
