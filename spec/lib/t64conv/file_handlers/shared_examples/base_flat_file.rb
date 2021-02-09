@@ -109,19 +109,24 @@ RSpec.shared_examples "base_flat_file" do
     end
 
     context "with dryrun specified" do
-      let(:sourcepath) { _fixture_filepath("game11.t64") }
+      let(:sourcepath) { _fixture_filepath("subdir4", "GAME14.T64") }
       let(:dryrun) { true }
 
       it "doesn't copy the file to the output directory" do
         handler.handle
-        expect(File).not_to exist(_expected_destination_file("G", "GAME11", "GAME11.T64"))
+        expect(File).not_to exist(_expected_destination_file("G", "GAME14", "GAME14.T64"))
+      end
+
+      it "doesn't copy in the version.nfo" do
+        handler.handle
+        expect(File).not_to exist(_expected_destination_file("G", "GAME14", "VERSION.NFO"))
       end
 
       context "capturing stdout" do
         let(:output_stream) { $stdout }
 
         it "prints to stdout the path being copied from and to" do
-          destpath = _expected_destination_file("G", "GAME11", "GAME11.T64")
+          destpath = _expected_destination_file("G", "GAME14", "GAME14.T64")
           full_sourcepath = File.expand_path(sourcepath)
           expect { handler.handle }.to output(/DRYRUN: Copying #{full_sourcepath} -> #{destpath}/).to_stdout
         end

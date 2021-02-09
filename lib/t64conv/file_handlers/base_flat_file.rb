@@ -44,7 +44,7 @@ module T64conv
         FileUtils.cp(
           _version_nfo_source_fullpath,
           _version_nfo_destination_fullpath
-        )
+        ) unless @dryrun
       end
 
       def _destination_fullpath
