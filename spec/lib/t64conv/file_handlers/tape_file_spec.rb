@@ -34,10 +34,30 @@ RSpec.describe T64conv::FileHandlers::TapeFileHandler do
         expected_destination = _expected_destination_file("G", "GAME11", "GAME11.D64")
 
         expect(Open3).to receive(:capture2e).with(
-          "c1541 -format 'GAME11,00' d64 '#{expected_destination}' 8 -tape '#{File.expand_path(sourcepath)}'"
+          "c1541", "-format", "GAME11,00", "d64", expected_destination, "8", "-tape", File.expand_path(sourcepath)
         ).and_return(["", status_mock])
 
         handler.handle
+      end
+
+      context "when the directory has a single quote in" do
+        let(:sourcepath) { _fixture_filepath("someone's game15", "game15.t64") }
+
+        it "has a well quoted sourcepath" do
+          expected_destination = _expected_destination_file("G", "GAME15", "GAME15.D64")
+
+          expected_source = File.join(
+            File.expand_path(_fixture_filepath),
+            "someone's game15",
+            "game15.t64"
+          )
+
+          expect(Open3).to receive(:capture2e).with(
+            "c1541", "-format", "GAME15,00", "d64", expected_destination, "8", "-tape", expected_source
+          ).and_return(["", status_mock])
+
+          handler.handle
+        end
       end
     end
 
@@ -60,9 +80,9 @@ RSpec.describe T64conv::FileHandlers::TapeFileHandler do
         expected_source = File.expand_path(sourcepath)
         fail_output = "TEST FAIL OUT"
 
-        expected_command = "c1541 -format 'GAME11,00' d64 '#{expected_destination}' 8 -tape '#{expected_source}'"
+        expected_command = ["c1541", "-format", "GAME11,00", "d64", expected_destination, "8", "-tape", expected_source]
 
-        expect(Open3).to receive(:capture2e).with(expected_command).and_return([fail_output, status_mock])
+        expect(Open3).to receive(:capture2e).with(*expected_command).and_return([fail_output, status_mock])
 
         handler.handle
 

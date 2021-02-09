@@ -129,6 +129,7 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
         expect_directory("game2 (1)")
         expect_zip_file("GAME98.ZIP")
         expect_zip_file("game99.zip")
+        expect_directory("someone's game15")
         expect_directory("subdir")
         expect_directory("subdir2")
         expect_directory("subdir3")

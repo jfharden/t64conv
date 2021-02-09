@@ -11,7 +11,7 @@ module T64conv
 
         return if @dryrun
 
-        output, status = Open3.capture2e(_conversion_command)
+        output, status = Open3.capture2e(*_conversion_command)
 
         return if status.success?
 
@@ -29,10 +29,10 @@ module T64conv
       end
 
       def _conversion_command
-        @conversion_command ||= "c1541 " \
-          "-format '#{_destination_filename_no_extension},00' " \
-          "d64 '#{_destination_fullpath}' " \
-          "8 -tape '#{@path}'"
+        @conversion_command ||= [
+          "c1541", "-format", "#{_destination_filename_no_extension},00", "d64",
+          _destination_fullpath, "8", "-tape", @path
+        ]
       end
     end
   end
