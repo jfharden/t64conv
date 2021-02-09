@@ -34,8 +34,8 @@ module T64conv
 
     END_OF_BANNER
 
-    def convert
-      opts = _parse_options
+    def convert(args)
+      opts = _parse_options(args)
 
       _check_c1541_installation
 
@@ -46,8 +46,8 @@ module T64conv
       traverser.discover
     end
 
-    def _parse_options
-      Optimist.options do
+    def _parse_options(args)
+      Optimist.options(args) do
         version "t64conv #{T64conv::VERSION} (c) 2021 Jonathan F Harden"
         banner BANNER
         opt :dryrun, "Run in dryrun mode, don't perform operations, only list what would be performed.", default: false

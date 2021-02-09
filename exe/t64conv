@@ -2,4 +2,4 @@
 
 require_relative "../lib/t64conv"
 
-T64conv::Cli.new.convert
+T64conv::Cli.new.convert(ARGV)
