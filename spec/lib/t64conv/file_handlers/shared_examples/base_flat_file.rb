@@ -146,7 +146,7 @@ RSpec.shared_examples "base_flat_file" do
         it "prints to stdout the path being copied from and to" do
           destpath = _expected_destination_file("G", "GAME14", "GAME14.T64")
           full_sourcepath = File.expand_path(sourcepath)
-          expect { handler.handle }.to output(/DRYRUN: Copying #{full_sourcepath} -> #{destpath}/).to_stdout
+          expect { handler.handle }.to output(/Copying #{full_sourcepath} -> #{destpath}/).to_stdout
         end
       end
     end

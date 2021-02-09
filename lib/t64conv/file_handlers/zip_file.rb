@@ -59,8 +59,7 @@ module T64conv
       end
 
       def _info_msg(message)
-        print("DRYRUN: ") if @dryrun
-        puts(message)
+        puts(message) if @dryrun
       end
     end
   end

@@ -156,7 +156,7 @@ RSpec.describe T64conv::FileHandlers::TapeFileHandler do
           destpath = _expected_destination_file("G", "GAME11", "GAME11.D64")
           full_sourcepath = File.expand_path(sourcepath)
 
-          expect { handler.handle }.to output(/DRYRUN: Converting #{full_sourcepath} -> #{destpath}/).to_stdout
+          expect { handler.handle }.to output(/Converting #{full_sourcepath} -> #{destpath}/).to_stdout
         end
       end
     end
