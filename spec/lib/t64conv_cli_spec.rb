@@ -62,8 +62,10 @@ RSpec.describe T64conv::Cli do
       it "prints the version message" do
         # rubocop:disable Lint/SuppressedException
         expect do
-          cli.convert(args)
-        rescue SystemExit
+          begin
+            cli.convert(args)
+          rescue SystemExit
+          end
         end.to output(/t64conv \d+\.\d+\.\d+ \(c\) 20[0-9]{2} Jonathan F Harden/).to_stdout
         # rubocop:enable Lint/SuppressedException
       end
@@ -91,8 +93,10 @@ RSpec.describe T64conv::Cli do
       it "prints the help message" do
         # rubocop:disable Lint/SuppressedException
         expect do
-          cli.convert(args)
-        rescue SystemExit
+          begin
+            cli.convert(args)
+          rescue SystemExit
+          end
         end.to output(/t64conv recursively traverses/).to_stdout
         # rubocop:enable Lint/SuppressedException
       end
