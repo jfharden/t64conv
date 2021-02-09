@@ -8,7 +8,7 @@ require_relative "../../../../lib/t64conv/file_handlers/directory_traverser"
 RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
   subject(:handler) { described_class.new(directory, output_dir, dryrun) }
   let(:output_dir) { Dir.mktmpdir("t64conv-tests-directory-traverser-") }
-  let(:dryrun) { double }
+  let(:dryrun) { false }
   let(:tape_file_handler) { double }
   let(:disk_file_handler) { double }
   let(:zip_file_handler) { double }
@@ -31,6 +31,14 @@ RSpec.describe T64conv::FileHandlers::DirectoryTraverser do
         described_class.new(directory, filepath, dryrun)
       end
       let(:directory) { _absolute_start_directory }
+
+      context "with dryrun enabled" do
+        let(:dryrun) { true }
+
+        it "should not raise an exception" do
+          expect { handler }.not_to raise_error
+        end
+      end
 
       it "Should raise ArgumentError" do
         expect { handler }.to raise_error(ArgumentError, /output directory .*GAME11\.t64 is not a directory$/)

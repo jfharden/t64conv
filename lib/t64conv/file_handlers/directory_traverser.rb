@@ -7,12 +7,12 @@ module T64conv
     # Reads a directories contents and triggers the appropriate handlers for the type of file
     class DirectoryTraverser
       def initialize(directory, output_dir, dryrun)
-        raise ArgumentError, "#{directory} is not a directory" unless File.directory?(directory)
-        raise ArgumentError, "output directory #{output_dir} is not a directory" unless File.directory?(output_dir)
-
         @directory = directory
         @output_dir = output_dir
         @dryrun = dryrun
+
+        raise ArgumentError, "#{directory} is not a directory" unless File.directory?(directory)
+        raise ArgumentError, "output directory #{output_dir} is not a directory" if _invalid_output_directory
       end
 
       def discover
@@ -28,6 +28,12 @@ module T64conv
 
           _handle_file(fullpath)
         end
+      end
+
+      def _invalid_output_directory
+        return if @dryrun
+
+        !File.directory?(@output_dir)
       end
 
       def _handle_file(path)

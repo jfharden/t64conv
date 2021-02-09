@@ -19,6 +19,14 @@ RSpec.shared_examples "errors when passed invalid arguments" do
       it "raises ArgumentError" do
         expect { handler }.to raise_error(ArgumentError, /Output directory #{output_dir} does not exist$/)
       end
+
+      context "with dryrun enabled" do
+        let(:dryrun) { true }
+
+        it "should not raise an exception" do
+          expect { handler }.not_to raise_error
+        end
+      end
     end
   end
 end
@@ -115,6 +123,16 @@ RSpec.shared_examples "base_flat_file" do
       it "doesn't copy the file to the output directory" do
         handler.handle
         expect(File).not_to exist(_expected_destination_file("G", "GAME14", "GAME14.T64"))
+      end
+
+      context "when the output directory doesn't exist already" do
+        subject(:handler) { described_class.new(sourcepath, output_sub_dir, dryrun) }
+        let(:output_sub_dir) { File.join(output_dir, "dryrun") }
+
+        it "doesn't create the output directory" do
+          handler.handle
+          expect(File).not_to exist(_expected_destination_file("dryrun"))
+        end
       end
 
       it "doesn't copy in the version.nfo" do
