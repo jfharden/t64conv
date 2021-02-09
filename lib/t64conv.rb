@@ -40,7 +40,7 @@ module T64conv
       _check_c1541_installation
 
       _validate_source_dir(opts[:source_dir])
-      _validate_and_create_output_dir(opts[:output_dir])
+      _validate_and_create_output_dir(opts[:output_dir], opts)
 
       traverser = T64conv::FileHandlers::DirectoryTraverser.new(opts[:source_dir], opts[:output_dir], opts[:dryrun])
       traverser.discover
@@ -62,12 +62,12 @@ module T64conv
       Optimist.die :source_dir, "#{dir} exists but is not a directory" unless File.directory?(dir)
     end
 
-    def _validate_and_create_output_dir(dir)
+    def _validate_and_create_output_dir(dir, opts)
       return if File.directory?(dir)
 
       Optimist.die :output_dir, "#{dir} already exists and is not a directory" if File.exist?(dir)
 
-      FileUtils.mkdir_p(dir)
+      FileUtils.mkdir_p(dir) unless opts[:dryrun]
     end
 
     def _check_c1541_installation

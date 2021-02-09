@@ -1,3 +1,5 @@
+require "securerandom"
+
 require_relative "../../lib/t64conv"
 
 RSpec.describe T64conv::Cli do
@@ -122,6 +124,21 @@ RSpec.describe T64conv::Cli do
           .and_return(traverser)
 
         expect { cli.convert(args) }.not_to raise_error
+      end
+
+      it "does not make the output directory" do
+        Dir.mktmpdir("t64conv-tests-cli-") do |tmpdir|
+          outdir = File.join(tmpdir, SecureRandom.uuid)
+
+          expect(T64conv::FileHandlers::DirectoryTraverser)
+            .to receive(:new)
+            .with("./", outdir, true)
+            .and_return(traverser)
+
+          expect { cli.convert(args + ["-o", outdir]) }.not_to raise_error
+
+          expect(File).not_to exist(outdir)
+        end
       end
     end
 
