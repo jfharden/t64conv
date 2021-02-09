@@ -1,7 +1,7 @@
-.PHONY=build-docker
-build-docker: build-gem
+.PHONY=docker
+docker: gem
 	docker build -t t64conv:test .
 
-.PHONY=build-gem
-build-gem:
+.PHONY=gem
+gem:
 	gem build ./t64conv.gemspec
