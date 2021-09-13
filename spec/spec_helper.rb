@@ -1,5 +1,4 @@
 require "bundler/setup"
-require "t64conv"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -11,4 +10,11 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+end
+
+def expect_source_and_destination_are_identical(source, dest)
+  source_md5 = Digest::MD5.hexdigest(File.read(source))
+  dest_md5 = Digest::MD5.hexdigest(File.read(dest))
+
+  expect(source_md5).to eq dest_md5
 end
